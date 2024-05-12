@@ -1,0 +1,4 @@
+bots:
+    Bot1:
+      name: '&4BotTest'
+      script: 'script'

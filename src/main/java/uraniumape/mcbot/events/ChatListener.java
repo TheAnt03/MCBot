@@ -4,7 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import uraniumape.mcbot.Bot;
-import uraniumape.mcbot.Main;
+import uraniumape.mcbot.MCBot;
 import uraniumape.mcbot.script.responses.Message;
 import uraniumape.mcbot.storage.Bots;
 
@@ -18,7 +18,7 @@ public class ChatListener implements Listener {
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent e) throws ScriptException, NoSuchMethodException {
-        getServer().getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+        getServer().getScheduler().runTaskAsynchronously(MCBot.getInstance(), () -> {
             Message message = new Message(e.getPlayer(), e.getMessage());
             List<Bot> bots = Bots.getInstance().getBots();
 

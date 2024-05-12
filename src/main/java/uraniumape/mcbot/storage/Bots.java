@@ -1,14 +1,13 @@
 package uraniumape.mcbot.storage;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import uraniumape.mcbot.Bot;
-import uraniumape.mcbot.Main;
+import uraniumape.mcbot.MCBot;
 import uraniumape.mcbot.script.ScriptLoader;
 
 public class Bots {
@@ -16,9 +15,15 @@ public class Bots {
     private List<Bot> bots;
 
     private Bots() {
-        FileConfiguration config = Main.getInstance().getConfig();
-        ConfigurationSection botsSection = config.getConfigurationSection("bots");
+        this.loadBots();
+    }
+
+    public void loadBots() {
+        Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Loading Scripts");
         this.bots = new ArrayList<>();
+
+        FileConfiguration config = MCBot.getInstance().getConfig();
+        ConfigurationSection botsSection = config.getConfigurationSection("bots");
 
         for (String key : botsSection.getKeys(false)) {
             String name = botsSection.getString(key + ".name");
@@ -29,8 +34,9 @@ public class Bots {
 
             bots.add(bot);
         }
-    }
 
+        Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Script load completed");
+    }
 
     public static Bots getInstance() {
         if (instance == null) {

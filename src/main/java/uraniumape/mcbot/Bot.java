@@ -3,13 +3,13 @@ package uraniumape.mcbot;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import uraniumape.mcbot.script.responses.Message;
 
 import javax.script.*;
 
 public class Bot  {
     private ScriptEngine engine;
     private String script = "";
-
     private String name;
     private String botPrefix;
 
@@ -26,7 +26,8 @@ public class Bot  {
         Bukkit.broadcastMessage(botPrefix + " " + message);
     }
 
-    public void readMessage(String message) throws ScriptException, NoSuchMethodException {
+
+    public void readMessage(Message message) throws ScriptException, NoSuchMethodException {
         engine.eval(this.script);
 
         Object[] args = {this, message};

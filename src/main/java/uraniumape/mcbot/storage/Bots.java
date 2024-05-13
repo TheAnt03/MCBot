@@ -15,7 +15,6 @@ public class Bots {
     private List<Bot> bots;
 
     private Bots() {
-        this.loadBots();
     }
 
     private void createBots(ConfigurationSection botsSection) {

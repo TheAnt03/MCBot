@@ -18,7 +18,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.regex.Pattern;
 
 public class Bot  {
@@ -102,6 +104,32 @@ public class Bot  {
     public ItemStack createItem(String type, int amount) {
         return new ItemStack(Material.valueOf(type.toUpperCase()), amount);
     }
+
+    public void executeUpdate(Connection connection, String query) {
+        try {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(query);
+            statement.close();
+        } catch (SQLException e) {
+            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not run executeUpdate()");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ResultSet executeQuery(Connection connection, String query) {
+        ResultSet rs;
+
+        try {
+            Statement statement = connection.createStatement();
+            rs = statement.executeQuery(query);
+        } catch (SQLException e) {
+            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not run executeUpdate()");
+            throw new RuntimeException(e);
+        }
+
+        return rs;
+    }
+
 
     public Connection getDatabaseConnection() {
         if(!this.useDatabase) {

@@ -8,11 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import uraniumape.mcbot.database.DatabaseConnection;
-import uraniumape.mcbot.script.responses.Message;
+import uraniumape.mcbot.script.parameters.Message;
 
 import javax.script.*;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -122,6 +121,7 @@ public class Bot  {
         try {
             Statement statement = connection.createStatement();
             rs = statement.executeQuery(query);
+
         } catch (SQLException e) {
             Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not run executeUpdate()");
             throw new RuntimeException(e);

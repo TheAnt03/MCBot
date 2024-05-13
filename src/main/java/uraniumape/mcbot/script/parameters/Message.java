@@ -1,4 +1,4 @@
-package uraniumape.mcbot.script.responses;
+package uraniumape.mcbot.script.parameters;
 
 import org.bukkit.entity.Player;
 

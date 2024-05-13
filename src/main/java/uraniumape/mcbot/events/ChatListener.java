@@ -1,7 +1,5 @@
 package uraniumape.mcbot.events;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -9,13 +7,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import uraniumape.mcbot.Bot;
 import uraniumape.mcbot.MCBot;
-import uraniumape.mcbot.script.responses.Message;
+import uraniumape.mcbot.script.parameters.Message;
 import uraniumape.mcbot.storage.Bots;
 
-import javax.script.ScriptException;
 import java.util.List;
 
-import static org.bukkit.Bukkit.getLogger;
 import static org.bukkit.Bukkit.getServer;
 
 public class ChatListener implements Listener {

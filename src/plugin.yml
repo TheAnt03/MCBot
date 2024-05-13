@@ -1,5 +1,5 @@
-name: MCBot # the plugins name as it should appear in the plugin list /pl
-version: 1.0 # the plugin's version
+name: MCBotJS
+version: 0.2.0
 author: Uranium_Ape
 main: uraniumape.mcbot.MCBot
 api-version: 1.20

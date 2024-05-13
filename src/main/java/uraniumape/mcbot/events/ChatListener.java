@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import uraniumape.mcbot.Bot;
 import uraniumape.mcbot.MCBot;
 import uraniumape.mcbot.script.responses.Message;
@@ -38,6 +39,17 @@ public class ChatListener implements Listener {
 
             for(Bot bot : bots) {
                 bot.onPlayerJoin(e.getPlayer());
+            }
+        });
+    }
+
+    @EventHandler
+    public void onPlayerLeave(PlayerQuitEvent e) {
+        getServer().getScheduler().runTaskAsynchronously(MCBot.getInstance(), () -> {
+            List<Bot> bots = Bots.getInstance().getBots();
+
+            for(Bot bot : bots) {
+                bot.onPlayerLeave(e.getPlayer());
             }
         });
     }

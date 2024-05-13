@@ -22,7 +22,7 @@ public class ChatListener implements Listener {
             Message message = new Message(e.getPlayer(), e.getMessage());
             List<Bot> bots = Bots.getInstance().getBots();
 
-            for(Bot bot : bots) {
+            for (Bot bot : bots) {
                 bot.readMessage(message);
             }
         });
@@ -33,7 +33,7 @@ public class ChatListener implements Listener {
         getServer().getScheduler().runTaskAsynchronously(MCBot.getInstance(), () -> {
             List<Bot> bots = Bots.getInstance().getBots();
 
-            for(Bot bot : bots) {
+            for (Bot bot : bots) {
                 bot.onPlayerJoin(e.getPlayer());
             }
         });
@@ -44,7 +44,7 @@ public class ChatListener implements Listener {
         getServer().getScheduler().runTaskAsynchronously(MCBot.getInstance(), () -> {
             List<Bot> bots = Bots.getInstance().getBots();
 
-            for(Bot bot : bots) {
+            for (Bot bot : bots) {
                 bot.onPlayerLeave(e.getPlayer());
             }
         });

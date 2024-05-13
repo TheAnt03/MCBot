@@ -46,18 +46,6 @@ public class Bot  {
         databaseInitEvent(connection);
     }
 
-    private void databaseInitEvent(DatabaseConnection connection) {
-        Object[] args = {this, connection.getConnection()};
-        Invocable invocable = (Invocable) engine;
-
-        try {
-            Object funcResult = invocable.invokeFunction("databaseInit", args);
-        } catch (ScriptException e) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not run databaseInit() for bot " + this.getName() + ChatColor.WHITE + "\n:" + e.getMessage());
-        } catch (NoSuchMethodException e) {
-            // Do nothing
-        }
-    }
 
     private void instantiateBot(String name, String script) {
         this.name = name;
@@ -73,6 +61,19 @@ public class Bot  {
             Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Bot " + this.name + " initialized!");
         } catch (ScriptException e) {
             Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " There was an error when initializing script for bot " + name + ChatColor.WHITE + "\n:" + e.getMessage());
+        }
+    }
+
+    private void databaseInitEvent(DatabaseConnection connection) {
+        Object[] args = {this, connection.getConnection()};
+        Invocable invocable = (Invocable) engine;
+
+        try {
+            Object funcResult = invocable.invokeFunction("databaseInit", args);
+        } catch (ScriptException e) {
+            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not run databaseInit() for bot " + this.getName() + ChatColor.WHITE + "\n:" + e.getMessage());
+        } catch (NoSuchMethodException e) {
+            // Do nothing
         }
     }
 

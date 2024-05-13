@@ -48,7 +48,7 @@ public class Bot  {
     }
 
     private void databaseInitEvent(DatabaseConnection connection) {
-        Object[] args = {connection.getConnection()};
+        Object[] args = {this, connection.getConnection()};
         Invocable invocable = (Invocable) engine;
 
         try {

@@ -62,7 +62,7 @@ public class Bot  {
                 break;
         }
 
-        this.invoke("databaseInit", new Object[]{this, connection.getConnection()});
+        this.invoke("databaseInit", new Object[]{this, connection});
     }
 
     /**
@@ -138,9 +138,11 @@ public class Bot  {
      * @param connection - The connection object
      * @param query - The query itself
      */
-    public void executeUpdate(Connection connection, String query) {
+    public void executeUpdate(DatabaseConnection connection, String query) {
+        Connection conn = connection.getConnection();
+
         try {
-            Statement statement = connection.createStatement();
+            Statement statement = conn.createStatement();
             statement.executeUpdate(query);
             statement.close();
         } catch (SQLException e) {
@@ -156,11 +158,12 @@ public class Bot  {
      * @param query - The query itself
      * @return - The ResultSet
      */
-    public ResultSet executeQuery(Connection connection, String query) {
+    public ResultSet executeQuery(DatabaseConnection connection, String query) {
         ResultSet rs;
+        Connection conn = connection.getConnection();
 
         try {
-            Statement statement = connection.createStatement();
+            Statement statement = conn.createStatement();
             rs = statement.executeQuery(query);
 
         } catch (SQLException e) {
@@ -210,12 +213,12 @@ public class Bot  {
         return server.getOnlinePlayers().toArray();
     }
 
-    public Connection getDatabaseConnection() {
+    public DatabaseConnection getDatabaseConnection() {
         if(!this.useDatabase) {
             Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Database is not enabled on this bot");
             return null;
         }
 
-        return this.connection.getConnection();
+        return this.connection;
     }
 }

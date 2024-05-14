@@ -5,6 +5,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import uraniumape.mcbot.commands.MCBotCommand;
+import uraniumape.mcbot.database.DatabaseConnection;
+import uraniumape.mcbot.database.connections.MySQLConnection;
 import uraniumape.mcbot.events.ChatListener;
 import uraniumape.mcbot.storage.Bots;
 
@@ -45,6 +47,17 @@ public class MCBot extends JavaPlugin {
 
         Bukkit.getConsoleSender().sendMessage(prefix + " Enabled MCBot");
 
+    }
+
+    @Override
+    public void onDisable() {
+        Bots bots = Bots.getInstance();
+
+        for(Bot bot : bots.getBots()) {
+            if(bot.getDatabaseConnection() instanceof MySQLConnection) {
+                ((MySQLConnection) bot.getDatabaseConnection()).closePool();
+            }
+        }
     }
 
     public static MCBot getInstance() {

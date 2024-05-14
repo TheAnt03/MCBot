@@ -22,6 +22,15 @@ public abstract class DatabaseConnection {
 
     protected abstract Connection generateConnection() throws SQLException, ClassNotFoundException, NoConnectionString;
 
+    public void close() {
+        try {
+            this.connection.close();
+        } catch (SQLException e) {
+            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not close database connection");
+            throw new RuntimeException(e);
+        }
+    }
+
     public Connection getConnection() {
         try {
             if(connection == null || connection.isClosed()) {
@@ -34,4 +43,6 @@ public abstract class DatabaseConnection {
             throw new RuntimeException(e);
         }
     }
+
+
 }

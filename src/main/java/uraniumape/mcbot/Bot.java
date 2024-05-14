@@ -62,9 +62,15 @@ public class Bot  {
                 break;
         }
 
-        databaseInitEvent(connection);
+        this.invoke("databaseInit", new Object[]{this, connection.getConnection()});
     }
 
+    /**
+     * Initialize the bot
+     *
+     * @param name - The bots in game name
+     * @param script - The script js as a string
+     */
     private void instantiateBot(String name, String script) {
         this.name = name;
         this.botPrefix = "[" + ChatColor.translateAlternateColorCodes('&', name) + "§f]";
@@ -82,23 +88,21 @@ public class Bot  {
         }
     }
 
-    private void databaseInitEvent(DatabaseConnection connection) {
-        Object[] args = {this, connection.getConnection()};
-        Invocable invocable = (Invocable) engine;
-
-        try {
-            Object funcResult = invocable.invokeFunction("databaseInit", args);
-        } catch (ScriptException e) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not run databaseInit() for bot " + this.getName() + ChatColor.WHITE + "\n:" + e.getMessage());
-        } catch (NoSuchMethodException e) {
-            // Do nothing
-        }
-    }
-
+    /**
+     * Sends a message as the bot
+     *
+     * @param message - The message you want to send
+     */
     public void sendMessage(String message) {
         Bukkit.broadcastMessage(botPrefix + " " + message);
     }
 
+    /**
+     * Sends get request to path
+     *
+     * @param path - The request path
+     * @return - The result as a String
+     */
     public String get(String path) {
         HttpResponse<String> response;
         HttpClient client = HttpClient.newHttpClient();
@@ -115,14 +119,25 @@ public class Bot  {
         return response.body();
     }
 
-    public Object[] getPlayers() {
-        return server.getOnlinePlayers().toArray();
-    }
 
+    /**
+     * Creates an ItemStack and passes it back.
+     *
+     * @param type - The material
+     * @param amount - How many
+     * @return - The ItemStack
+     */
     public ItemStack createItem(String type, int amount) {
         return new ItemStack(Material.valueOf(type.toUpperCase()), amount);
     }
 
+
+    /**
+     * Execute a query which does not return anything
+     *
+     * @param connection - The connection object
+     * @param query - The query itself
+     */
     public void executeUpdate(Connection connection, String query) {
         try {
             Statement statement = connection.createStatement();
@@ -134,6 +149,13 @@ public class Bot  {
         }
     }
 
+    /**
+     * Execute a query which contains a ResultSet
+     *
+     * @param connection - The connection object
+     * @param query - The query itself
+     * @return - The ResultSet
+     */
     public ResultSet executeQuery(Connection connection, String query) {
         ResultSet rs;
 
@@ -150,50 +172,17 @@ public class Bot  {
     }
 
 
-    public Connection getDatabaseConnection() {
-        if(!this.useDatabase) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Database is not enabled on this bot");
-            return null;
-        }
-
-        return this.connection.getConnection();
-    }
-
-    //TODO: Hide this from JS
-    public void readMessage(Message message) {
-        Object[] args = {this, message};
+    /**
+     * Invoke a function inside the script
+     *
+     * @param function - The function you would like to run
+     * @param args - An object array of args
+     */
+    public void invoke(String function, Object[] args) {
         Invocable invocable = (Invocable) engine;
 
         try {
-            Object funcResult = invocable.invokeFunction("onMessageSend", args);
-        } catch (ScriptException e) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not run readMessage() for bot " + this.getName() + ChatColor.WHITE + "\n:" + e.getMessage());
-        } catch (NoSuchMethodException e) {
-            // Do nothing
-        }
-    }
-
-    //TODO: Hide this from JS
-    public void onPlayerJoin(Player player) {
-        Object[] args = {this, player};
-        Invocable invocable = (Invocable) engine;
-
-        try {
-            Object funcResult = invocable.invokeFunction("onPlayerJoin", args);
-        } catch (ScriptException e) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not run onPlayerJoin() for bot " + this.getName() + ChatColor.WHITE + "\n:" + e.getMessage());
-        } catch (NoSuchMethodException e) {
-            // Do nothing
-        }
-    }
-
-    //TODO: Hide this from JS
-    public void onPlayerLeave(Player player) {
-        Object[] args = {this, player};
-        Invocable invocable = (Invocable) engine;
-
-        try {
-            Object funcResult = invocable.invokeFunction("onPlayerLeave", args);
+            Object funcResult = invocable.invokeFunction(function, args);
         } catch (ScriptException e) {
             Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not run onPlayerLeave() for bot " + this.getName() + ChatColor.WHITE + "\n:" + e.getMessage());
         } catch (NoSuchMethodException e) {
@@ -215,5 +204,18 @@ public class Bot  {
 
     public Server getServer() {
         return server;
+    }
+
+    public Object[] getPlayers() {
+        return server.getOnlinePlayers().toArray();
+    }
+
+    public Connection getDatabaseConnection() {
+        if(!this.useDatabase) {
+            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Database is not enabled on this bot");
+            return null;
+        }
+
+        return this.connection.getConnection();
     }
 }

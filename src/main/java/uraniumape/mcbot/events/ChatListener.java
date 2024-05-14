@@ -23,7 +23,7 @@ public class ChatListener implements Listener {
             List<Bot> bots = Bots.getInstance().getBots();
 
             for (Bot bot : bots) {
-                bot.readMessage(message);
+                bot.invoke("onMessageSend", new Object[]{bot, message});
             }
         });
     }
@@ -34,7 +34,7 @@ public class ChatListener implements Listener {
             List<Bot> bots = Bots.getInstance().getBots();
 
             for (Bot bot : bots) {
-                bot.onPlayerJoin(e.getPlayer());
+                bot.invoke("onPlayerJoin", new Object[]{bot, e.getPlayer()});
             }
         });
     }
@@ -45,7 +45,7 @@ public class ChatListener implements Listener {
             List<Bot> bots = Bots.getInstance().getBots();
 
             for (Bot bot : bots) {
-                bot.onPlayerLeave(e.getPlayer());
+                bot.invoke("onPlayerLeave", new Object[]{bot, e.getPlayer()});
             }
         });
     }

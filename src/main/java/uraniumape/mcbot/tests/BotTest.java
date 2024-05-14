@@ -22,6 +22,6 @@ public class BotTest {
 
         Bot bot = new Bot("Test Bot", testScript);
 
-        bot.readMessage(message);
+        bot.invoke("onMessageSend", new Object[]{bot, message});
     }
 }

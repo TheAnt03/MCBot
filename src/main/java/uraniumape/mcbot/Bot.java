@@ -7,7 +7,10 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import uraniumape.mcbot.database.DBDriver;
 import uraniumape.mcbot.database.DatabaseConnection;
+import uraniumape.mcbot.database.connections.MySQLConnection;
+import uraniumape.mcbot.database.connections.SQLiteConnection;
 import uraniumape.mcbot.script.parameters.Message;
 
 import javax.script.*;
@@ -22,6 +25,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.regex.Pattern;
 
+/**
+ * TODO: Absolutely rewrite this entire class. Holy shit is it ever a mess.
+ * Perhaps I will wrap the bot for the event handlers, then the JS functions will
+ * be passed in as an argument inside the wrapper
+ */
 public class Bot  {
     private ScriptEngine engine;
     private String script = "";
@@ -38,14 +46,24 @@ public class Bot  {
         this.instantiateBot(name, script);
     }
 
-    public Bot(String name, String script, boolean autoCommit) {
+    public Bot(String name, String script, boolean autoCommit, DBDriver driver) {
         this.instantiateBot(name, script);
         this.useDatabase = true;
 
-        connection = new DatabaseConnection(this.getNameNoColor(), autoCommit);
+        switch(driver) {
+            case SQLite:
+                connection = new SQLiteConnection(name, autoCommit);
+                break;
+
+            case MYSQL:
+                String connectionString = MCBot.getInstance().getConfig().getString("connection_string");
+
+                connection = new MySQLConnection(name, autoCommit, connectionString);
+                break;
+        }
+
         databaseInitEvent(connection);
     }
-
 
     private void instantiateBot(String name, String script) {
         this.name = name;

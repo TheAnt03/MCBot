@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import uraniumape.mcbot.Bot;
 import uraniumape.mcbot.MCBot;
 import uraniumape.mcbot.database.DBDriver;
+import uraniumape.mcbot.database.connections.MySQLConnection;
 import uraniumape.mcbot.script.ScriptLoader;
 
 public class Bots {
@@ -73,8 +74,15 @@ public class Bots {
         return instance;
     }
 
-
     public List<Bot> getBots() {
         return this.bots;
+    }
+
+    public void closePools() {
+        for(Bot bot : bots) {
+            if(bot.getDatabaseConnection() instanceof MySQLConnection) {
+                ((MySQLConnection) bot.getDatabaseConnection()).closePool();
+            }
+        }
     }
 }

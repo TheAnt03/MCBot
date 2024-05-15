@@ -5,7 +5,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import uraniumape.mcbot.Bot;
 import uraniumape.mcbot.MCBot;
+import uraniumape.mcbot.database.connections.MySQLConnection;
 import uraniumape.mcbot.storage.Bots;
 
 public class MCBotCommand implements CommandExecutor {
@@ -29,6 +31,7 @@ public class MCBotCommand implements CommandExecutor {
 
         switch(commandArg) {
             case "reload":
+                Bots.getInstance().closePools();
                 MCBot.getInstance().reloadConfig();
                 Bots.getInstance().loadBots();
 

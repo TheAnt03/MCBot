@@ -51,13 +51,7 @@ public class MCBot extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Bots bots = Bots.getInstance();
-
-        for(Bot bot : bots.getBots()) {
-            if(bot.getDatabaseConnection() instanceof MySQLConnection) {
-                ((MySQLConnection) bot.getDatabaseConnection()).closePool();
-            }
-        }
+        Bots.getInstance().closePools();
     }
 
     public static MCBot getInstance() {

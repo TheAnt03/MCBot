@@ -28,6 +28,7 @@
             <groupId>org.openjdk.nashorn</groupId>
             <artifactId>nashorn-core</artifactId>
             <version>15.4</version>
+
         </dependency>
 
         <!--This adds the Spigot API artifact to the build -->
@@ -108,7 +109,19 @@
                 <configuration>
                     <filters>
                         <filter>
-                            <artifact>junit</artifact>
+                            <artifact>org.junit.*</artifact>
+                            <excludes>
+                                <exclude>**</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>org.opentest4j</artifact>
+                            <excludes>
+                                <exclude>**</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>org.ow2</artifact>
                             <excludes>
                                 <exclude>**</exclude>
                             </excludes>
@@ -150,7 +163,7 @@
                             </excludes>
                         </filter>
                         <filter>
-                            <artifact>commons-*</artifact>
+                            <artifact>commons-**</artifact>
                             <excludes>
                                 <exclude>**</exclude>
                             </excludes>
@@ -169,6 +182,12 @@
                         </filter>
                         <filter>
                             <artifact>org.slf4j:*</artifact>
+                            <excludes>
+                                <exclude>**</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>org.apiguardian:*</artifact>
                             <excludes>
                                 <exclude>**</exclude>
                             </excludes>

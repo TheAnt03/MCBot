@@ -5,17 +5,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import uraniumape.mcbot.Bot;
+import uraniumape.mcbot.bot.Bot;
 import uraniumape.mcbot.MCBot;
 import uraniumape.mcbot.script.parameters.Message;
-import uraniumape.mcbot.storage.Bots;
+import uraniumape.mcbot.bot.Bots;
 
 import java.util.List;
 
 import static org.bukkit.Bukkit.getServer;
 
 public class ChatListener implements Listener {
-
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent e) {
         getServer().getScheduler().runTaskAsynchronously(MCBot.getInstance(), () -> {

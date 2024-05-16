@@ -1,4 +1,4 @@
-package uraniumape.mcbot;
+package uraniumape.mcbot.bot;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,6 +7,7 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import uraniumape.mcbot.MCBot;
 import uraniumape.mcbot.database.DBDriver;
 import uraniumape.mcbot.database.DatabaseConnection;
 import uraniumape.mcbot.database.connections.MySQLConnection;
@@ -193,15 +194,12 @@ public class Bot  {
         }
     }
 
+    /**
+     * Returns the name
+     *
+     * @return The bots name
+     */
     public String getName() {
-        return name;
-    }
-
-    public String getNameNoColor() {
-        String name = this.name;
-        name = STRIP_AMP_COLOR_PATTERN.matcher(name).replaceAll("");
-        name = ChatColor.stripColor(name);
-
         return name;
     }
 
@@ -221,4 +219,18 @@ public class Bot  {
 
         return this.connection;
     }
+    /**
+     * Returns name without color
+     *
+     * @return The name with color codes stripped
+     */
+    public String getNameNoColor() {
+        String name = this.name;
+        name = STRIP_AMP_COLOR_PATTERN.matcher(name).replaceAll("");
+        name = ChatColor.stripColor(name);
+
+        return name;
+    }
+
+
 }

@@ -1,7 +1,7 @@
 package uraniumape.mcbot.tests;
 
 import org.junit.jupiter.api.Test;
-import uraniumape.mcbot.Bot;
+import uraniumape.mcbot.bot.Bot;
 import uraniumape.mcbot.script.parameters.Message;
 
 import javax.script.ScriptException;

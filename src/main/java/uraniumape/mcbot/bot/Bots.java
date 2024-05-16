@@ -1,4 +1,4 @@
-package uraniumape.mcbot.storage;
+package uraniumape.mcbot.bot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,17 +6,43 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import uraniumape.mcbot.Bot;
 import uraniumape.mcbot.MCBot;
 import uraniumape.mcbot.database.DBDriver;
 import uraniumape.mcbot.database.connections.MySQLConnection;
 import uraniumape.mcbot.script.ScriptLoader;
 
 public class Bots {
-    private static Bots instance;
+    private static final Bots instance = new Bots();
     private List<Bot> bots;
 
-    private Bots() {
+    public void loadBots() {
+        Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Loading Scripts");
+        this.bots = new ArrayList<>();
+
+        FileConfiguration config = MCBot.getInstance().getConfig();
+        ConfigurationSection botsSection = config.getConfigurationSection("bots");
+
+        if(botsSection != null){
+            try {
+                createBots(botsSection);
+            } catch (IllegalArgumentException e) {
+                Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " You may have used an incorrect database driver. Supported types are: SQLite, MySQL");
+            }
+        }
+
+        Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Script load completed");
+    }
+
+    public List<Bot> getBots() {
+        return this.bots;
+    }
+
+    public void closePools() {
+        for(Bot bot : bots) {
+            if(bot.getDatabaseConnection() instanceof MySQLConnection) {
+                ((MySQLConnection) bot.getDatabaseConnection()).closePool();
+            }
+        }
     }
 
     private void createBots(ConfigurationSection botsSection) throws IllegalArgumentException {
@@ -48,41 +74,7 @@ public class Bots {
         }
     }
 
-    public void loadBots() {
-        Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Loading Scripts");
-        this.bots = new ArrayList<>();
-
-        FileConfiguration config = MCBot.getInstance().getConfig();
-        ConfigurationSection botsSection = config.getConfigurationSection("bots");
-
-        if(botsSection != null){
-            try {
-                createBots(botsSection);
-            } catch (IllegalArgumentException e) {
-                Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " You may have used an incorrect database driver. Supported types are: SQLite, MySQL");
-            }
-        }
-
-        Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Script load completed");
-    }
-
     public static Bots getInstance() {
-        if (instance == null) {
-            instance = new Bots();
-        }
-
         return instance;
-    }
-
-    public List<Bot> getBots() {
-        return this.bots;
-    }
-
-    public void closePools() {
-        for(Bot bot : bots) {
-            if(bot.getDatabaseConnection() instanceof MySQLConnection) {
-                ((MySQLConnection) bot.getDatabaseConnection()).closePool();
-            }
-        }
     }
 }

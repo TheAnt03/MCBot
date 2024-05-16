@@ -2,13 +2,10 @@ package uraniumape.mcbot;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import uraniumape.mcbot.commands.MCBotCommand;
-import uraniumape.mcbot.database.DatabaseConnection;
-import uraniumape.mcbot.database.connections.MySQLConnection;
 import uraniumape.mcbot.events.ChatListener;
-import uraniumape.mcbot.storage.Bots;
+import uraniumape.mcbot.bot.Bots;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -17,8 +14,6 @@ import java.nio.file.Paths;
 public class MCBot extends JavaPlugin {
     public static MCBot instance;
     public static String prefix;
-
-    FileConfiguration config;
 
     private void generateFolder(String path) {
         if (!Files.isDirectory(Paths.get(getDataFolder() + path))) {
@@ -36,17 +31,15 @@ public class MCBot extends JavaPlugin {
     public void onEnable() {
         instance = this;
         prefix = "[" + ChatColor.DARK_RED + this.getDescription().getName() + ChatColor.WHITE + "]";
-
         this.saveDefaultConfig();
-        getServer().getPluginManager().registerEvents(new ChatListener(), this);
         this.getCommand("mcbot").setExecutor(new MCBotCommand());
+
+        getServer().getPluginManager().registerEvents(new ChatListener(), this);
         generateFolder("/scripts/");
         generateFolder("/databases/");
 
         Bots.getInstance().loadBots();
-
         Bukkit.getConsoleSender().sendMessage(prefix + " Enabled MCBot");
-
     }
 
     @Override

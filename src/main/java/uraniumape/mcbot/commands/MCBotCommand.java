@@ -5,21 +5,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import uraniumape.mcbot.Bot;
 import uraniumape.mcbot.MCBot;
-import uraniumape.mcbot.database.connections.MySQLConnection;
-import uraniumape.mcbot.storage.Bots;
+import uraniumape.mcbot.bot.Bots;
 
 public class MCBotCommand implements CommandExecutor {
     private final String reloadMessage = MCBot.prefix + " Configuration and scripts reloaded!";
-    private void displayHelpCommand(CommandSender sender) {
-        String message = "§4[MCBot Commands]\n";
-        message += "§4/mcbot §freload - Reloads config & scripts";
 
-        sender.sendMessage(message);
-    }
-
-    // This method is called, when somebody uses our command
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 0) {
@@ -27,9 +18,7 @@ public class MCBotCommand implements CommandExecutor {
             return true;
         }
 
-        String commandArg = args[0];
-
-        switch(commandArg) {
+        switch(args[0]) {
             case "reload":
                 Bots.getInstance().closePools();
                 MCBot.getInstance().reloadConfig();
@@ -47,5 +36,12 @@ public class MCBotCommand implements CommandExecutor {
         }
 
         return true;
+    }
+
+    private void displayHelpCommand(CommandSender sender) {
+        String message = "§4[MCBot Commands]\n";
+        message += "§4/mcbot §freload - Reloads config & scripts";
+
+        sender.sendMessage(message);
     }
 }

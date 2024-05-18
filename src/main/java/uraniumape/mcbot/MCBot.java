@@ -33,11 +33,10 @@ public class MCBot extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        instance = this;
+        this.logger = new ServerLogger();
         this.saveDefaultConfig();
         this.generateFolder("/scripts/");
         this.generateFolder("/databases/");
-        this.logger = new ServerLogger();
         this.bots = new Bots(logger, this);
         this.bots.loadBots();
 

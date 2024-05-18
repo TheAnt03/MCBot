@@ -15,13 +15,20 @@ import java.util.List;
 import static org.bukkit.Bukkit.getServer;
 
 public class ChatListener implements Listener {
+    private final MCBot mcBot;
+    private final Bots bots;
+
+    public ChatListener(MCBot mcBot, Bots bots) {
+        this.mcBot = mcBot;
+        this.bots = bots;
+    }
+
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent e) {
-        getServer().getScheduler().runTaskAsynchronously(MCBot.getInstance(), () -> {
+        getServer().getScheduler().runTaskAsynchronously(this.mcBot, () -> {
             Message message = new Message(e.getPlayer(), e.getMessage());
-            List<Bot> bots = Bots.getInstance().getBots();
 
-            for (Bot bot : bots) {
+            for (Bot bot : this.bots.getBots()) {
                 bot.invoke("onMessageSend", new Object[]{bot, message});
             }
         });
@@ -29,10 +36,8 @@ public class ChatListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        getServer().getScheduler().runTaskAsynchronously(MCBot.getInstance(), () -> {
-            List<Bot> bots = Bots.getInstance().getBots();
-
-            for (Bot bot : bots) {
+        getServer().getScheduler().runTaskAsynchronously(this.mcBot, () -> {
+            for (Bot bot : this.bots.getBots()) {
                 bot.invoke("onPlayerJoin", new Object[]{bot, e.getPlayer()});
             }
         });
@@ -40,10 +45,8 @@ public class ChatListener implements Listener {
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e) {
-        getServer().getScheduler().runTaskAsynchronously(MCBot.getInstance(), () -> {
-            List<Bot> bots = Bots.getInstance().getBots();
-
-            for (Bot bot : bots) {
+        getServer().getScheduler().runTaskAsynchronously(this.mcBot, () -> {
+            for (Bot bot : this.bots.getBots()) {
                 bot.invoke("onPlayerLeave", new Object[]{bot, e.getPlayer()});
             }
         });

@@ -6,6 +6,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import uraniumape.mcbot.commands.MCBotCommand;
 import uraniumape.mcbot.events.ChatListener;
 import uraniumape.mcbot.bot.Bots;
+import uraniumape.mcbot.log.BotLogger;
+import uraniumape.mcbot.log.ServerLogger;
+import uraniumape.mcbot.script.ScriptLoader;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -14,15 +17,17 @@ import java.nio.file.Paths;
 public class MCBot extends JavaPlugin {
     public static MCBot instance;
     public static String prefix;
+    private Bots bots;
+    private BotLogger logger;
 
     private void generateFolder(String path) {
         if (!Files.isDirectory(Paths.get(getDataFolder() + path))) {
             File dir = new File(getDataFolder() + path);
 
             if(dir.mkdir()) {
-                Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Created " + path + " directory!");
+                this.logger.logInfo("Created " + path + " directory!");
             } else {
-                Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not make " + path + " directory!");
+                this.logger.logError("Could not make " + path + " directory!");
             }
         }
     }
@@ -32,22 +37,24 @@ public class MCBot extends JavaPlugin {
         instance = this;
         prefix = "[" + ChatColor.DARK_RED + this.getDescription().getName() + ChatColor.WHITE + "]";
         this.saveDefaultConfig();
-        this.getCommand("mcbot").setExecutor(new MCBotCommand());
+        this.generateFolder("/scripts/");
+        this.generateFolder("/databases/");
+        this.logger = new ServerLogger();
+        this.bots = new Bots(logger, this);
+        this.bots.loadBots();
 
-        getServer().getPluginManager().registerEvents(new ChatListener(), this);
-        generateFolder("/scripts/");
-        generateFolder("/databases/");
-
-        Bots.getInstance().loadBots();
-        Bukkit.getConsoleSender().sendMessage(prefix + " Enabled MCBot");
+        this.getCommand("mcbot").setExecutor(new MCBotCommand(logger,this));
+        this.getServer().getPluginManager().registerEvents(new ChatListener(this, this.bots), this);
+        this.logger.logInfo("Enabled MCBot");
     }
 
     @Override
     public void onDisable() {
-        Bots.getInstance().closePools();
+        this.bots.closePools();
     }
 
-    public static MCBot getInstance() {
-        return instance;
+    public void reloadBots() {
+        this.bots.closePools();
+        this.bots.loadBots();
     }
 }

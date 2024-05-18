@@ -1,16 +1,25 @@
 package uraniumape.mcbot.commands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import uraniumape.mcbot.MCBot;
 import uraniumape.mcbot.bot.Bots;
+import uraniumape.mcbot.log.BotLogger;
 
 public class MCBotCommand implements CommandExecutor {
-    private final String reloadMessage = MCBot.prefix + " Configuration and scripts reloaded!";
+    private final String reloadMessage = "Configuration and scripts reloaded!";
+    private final MCBot mcBot;
+    private final BotLogger logger;
+    private final String prefix = "[" + ChatColor.DARK_RED + "MCBotJS" + ChatColor.WHITE + "] ";
 
+    public MCBotCommand(BotLogger logger, MCBot mcBot) {
+        this.mcBot = mcBot;
+        this.logger = logger;
+    }
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 0) {
@@ -20,15 +29,14 @@ public class MCBotCommand implements CommandExecutor {
 
         switch(args[0]) {
             case "reload":
-                Bots.getInstance().closePools();
-                MCBot.getInstance().reloadConfig();
-                Bots.getInstance().loadBots();
+                this.mcBot.reloadConfig();
+                this.mcBot.reloadBots();
 
                 if(sender instanceof Player) {
-                    sender.sendMessage(reloadMessage);
+                    sender.sendMessage(prefix + reloadMessage);
                 }
 
-                Bukkit.getConsoleSender().sendMessage(reloadMessage);
+                this.logger.logInfo(reloadMessage);
                 break;
             default:
                 displayHelpCommand(sender);

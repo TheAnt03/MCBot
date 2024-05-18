@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import uraniumape.mcbot.MCBot;
 import uraniumape.mcbot.database.DatabaseConnection;
 import uraniumape.mcbot.exceptions.NoConnectionString;
+import uraniumape.mcbot.log.BotLogger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,8 +16,8 @@ public class MySQLConnection extends DatabaseConnection {
     private String connectionString;
     private HikariDataSource dataSource;
 
-    public MySQLConnection(String botName, boolean autoCommit, String connectionString)  {
-        super(botName, autoCommit);
+    public MySQLConnection(BotLogger logger, String botName, boolean autoCommit, String connectionString)  {
+        super(logger, botName, autoCommit);
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(connectionString);
         config.addDataSourceProperty("cachePrepStmts", "true");
@@ -48,7 +49,7 @@ public class MySQLConnection extends DatabaseConnection {
         try {
             closeConnection();
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not close database connection");
+            this.logger.logError("Could not close database connection");
             throw new RuntimeException(e);
         }
     }

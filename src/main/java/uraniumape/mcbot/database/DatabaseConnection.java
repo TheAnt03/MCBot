@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import uraniumape.mcbot.MCBot;
 import uraniumape.mcbot.exceptions.NoConnectionString;
+import uraniumape.mcbot.log.BotLogger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,9 +14,10 @@ import java.util.regex.Pattern;
 public abstract class DatabaseConnection {
     protected String botName;
     protected boolean autoCommit;
+    protected BotLogger logger;
     private Connection connection;
 
-    protected DatabaseConnection(String botName, boolean autoCommit) {
+    protected DatabaseConnection(BotLogger logger, String botName, boolean autoCommit) {
         this.botName = botName;
         this.autoCommit = autoCommit;
     }
@@ -26,7 +28,7 @@ public abstract class DatabaseConnection {
         try {
             this.connection.close();
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not close database connection");
+            this.logger.logError("Could not close database connection");
             throw new RuntimeException(e);
         }
     }
@@ -39,7 +41,7 @@ public abstract class DatabaseConnection {
 
             return connection;
         } catch (SQLException | ClassNotFoundException | NoConnectionString e) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not open database connection");
+            this.logger.logError("Could not open database connection");
             throw new RuntimeException(e);
         }
     }

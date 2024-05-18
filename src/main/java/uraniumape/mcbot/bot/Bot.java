@@ -12,6 +12,7 @@ import uraniumape.mcbot.database.DBDriver;
 import uraniumape.mcbot.database.DatabaseConnection;
 import uraniumape.mcbot.database.connections.MySQLConnection;
 import uraniumape.mcbot.database.connections.SQLiteConnection;
+import uraniumape.mcbot.log.BotLogger;
 import uraniumape.mcbot.script.parameters.Message;
 
 import javax.script.*;
@@ -26,40 +27,33 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.regex.Pattern;
 
-/**
- * TODO: Absolutely rewrite this entire class. Holy shit is it ever a mess.
- * Perhaps I will wrap the bot for the event handlers, then the JS functions will
- * be passed in as an argument inside the wrapper
- */
 public class Bot  {
+    private MCBot mcBot;
+    private BotLogger logger;
     private ScriptEngine engine;
     private String script = "";
     private String name;
     private String botPrefix;
     private Server server;
-
     private DatabaseConnection connection;
     private boolean useDatabase;
-
     private static final Pattern STRIP_AMP_COLOR_PATTERN = Pattern.compile("(?i)" + String.valueOf('&') + "[0-9A-FK-ORX]");
 
-    public Bot(String name, String script) {
-        this.instantiateBot(name, script);
+    public Bot(BotLogger logger, MCBot mcBot, String name, String script) {
+        this.instantiateBot(logger, mcBot, name, script);
     }
 
-    public Bot(String name, String script, boolean autoCommit, DBDriver driver) {
-        this.instantiateBot(name, script);
+    public Bot(BotLogger logger, MCBot mcBot, String name, String script, boolean autoCommit, DBDriver driver) {
+        this.instantiateBot(logger, mcBot, name, script);
         this.useDatabase = true;
 
         switch(driver) {
             case SQLite:
-                connection = new SQLiteConnection(name, autoCommit);
+                connection = new SQLiteConnection(logger, mcBot, name, autoCommit);
                 break;
-
             case MYSQL:
-                String connectionString = MCBot.getInstance().getConfig().getString("connection_string");
-
-                connection = new MySQLConnection(name, autoCommit, connectionString);
+                String connectionString = mcBot.getConfig().getString("connection_string");
+                connection = new MySQLConnection(logger, name, autoCommit, connectionString);
                 break;
         }
 
@@ -72,20 +66,22 @@ public class Bot  {
      * @param name - The bots in game name
      * @param script - The script js as a string
      */
-    private void instantiateBot(String name, String script) {
+    private void instantiateBot(BotLogger logger, MCBot mcBot, String name, String script) {
+        this.logger = logger;
+        this.mcBot = mcBot;
         this.name = name;
         this.botPrefix = "[" + ChatColor.translateAlternateColorCodes('&', name) + "§f]";
         this.script = script;
-        this.server = MCBot.getInstance().getServer();
+        this.server = Bukkit.getServer();
         this.useDatabase = false;
 
         engine = new NashornScriptEngineFactory().getScriptEngine();
 
         try {
             engine.eval(this.script);
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Bot " + this.name + " initialized!");
+            this.logger.logInfo("Bot " + this.name + " initialized!");
         } catch (ScriptException e) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " There was an error when initializing script for bot " + name + ChatColor.WHITE + "\n:" + e.getMessage());
+            this.logger.logError("There was an error when initializing script for bot " + name + ChatColor.WHITE + "\n:" + e.getMessage());
         }
     }
 
@@ -113,7 +109,7 @@ public class Bot  {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (InterruptedException | IOException e) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not run get() for bot " + this.getName() + ChatColor.WHITE + "\n:" + e.getMessage());
+            this.logger.logError("Could not run get() for bot " + this.getName() + ChatColor.WHITE + "\n:" + e.getMessage());
             throw new RuntimeException(e);
         }
 
@@ -147,7 +143,7 @@ public class Bot  {
             statement.executeUpdate(query);
             statement.close();
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not run executeUpdate()");
+            this.logger.logError("Could not run executeUpdate()");
             throw new RuntimeException(e);
         }
     }
@@ -168,7 +164,7 @@ public class Bot  {
             rs = statement.executeQuery(query);
 
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not run executeUpdate()");
+            this.logger.logError("Could not run executeUpdate()");
             throw new RuntimeException(e);
         }
 
@@ -188,7 +184,7 @@ public class Bot  {
         try {
             Object funcResult = invocable.invokeFunction(function, args);
         } catch (ScriptException e) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Could not run onPlayerLeave() for bot " + this.getName() + ChatColor.WHITE + "\n:" + e.getMessage());
+            this.logger.logError("Could not run onPlayerLeave() for bot " + this.getName() + ChatColor.WHITE + "\n:" + e.getMessage());
         } catch (NoSuchMethodException e) {
             // Do nothing
         }
@@ -213,7 +209,7 @@ public class Bot  {
 
     public DatabaseConnection getDatabaseConnection() {
         if(!this.useDatabase) {
-            Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Database is not enabled on this bot");
+            this.logger.logError("Database is not enabled on this bot");
             return null;
         }
 

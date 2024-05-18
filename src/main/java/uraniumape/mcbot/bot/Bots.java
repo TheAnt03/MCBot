@@ -9,28 +9,37 @@ import org.bukkit.configuration.file.FileConfiguration;
 import uraniumape.mcbot.MCBot;
 import uraniumape.mcbot.database.DBDriver;
 import uraniumape.mcbot.database.connections.MySQLConnection;
+import uraniumape.mcbot.log.BotLogger;
 import uraniumape.mcbot.script.ScriptLoader;
 
 public class Bots {
-    private static final Bots instance = new Bots();
     private List<Bot> bots;
+    private final MCBot mcBot;
+    private final ScriptLoader scriptLoader;
+    private final BotLogger logger;
+
+    public Bots(BotLogger logger, MCBot mcBot) {
+        this.mcBot = mcBot;
+        this.scriptLoader = new ScriptLoader(logger, mcBot);
+        this.logger = logger;
+    }
 
     public void loadBots() {
-        Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Loading Scripts");
+        this.logger.logInfo("Loading Scripts");
         this.bots = new ArrayList<>();
 
-        FileConfiguration config = MCBot.getInstance().getConfig();
+        FileConfiguration config = mcBot.getConfig();
         ConfigurationSection botsSection = config.getConfigurationSection("bots");
 
         if(botsSection != null){
             try {
                 createBots(botsSection);
             } catch (IllegalArgumentException e) {
-                Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " You may have used an incorrect database driver. Supported types are: SQLite, MySQL");
+                this.logger.logError("You may have used an incorrect database driver. Supported types are: SQLite, MySQL");
             }
         }
 
-        Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Script load completed");
+        this.logger.logInfo("Script load completed");
     }
 
     public List<Bot> getBots() {
@@ -47,34 +56,29 @@ public class Bots {
 
     private void createBots(ConfigurationSection botsSection) throws IllegalArgumentException {
         for (String key : botsSection.getKeys(false)) {
+            Bot bot;
             String name = botsSection.getString(key + ".name");
             String script = botsSection.getString(key + ".script");
-            String scriptContent = ScriptLoader.loadScript(script);
+            String scriptContent = scriptLoader.loadScript(script);
+            String driverString = botsSection.getString(key + ".dbDriver");
             boolean useDatabase = botsSection.getBoolean(key + ".useDatabase");
             boolean autoCommit = botsSection.getBoolean(key + ".autoCommit");
-            String driverString = botsSection.getString(key + ".dbDriver");
-
             boolean noDriverString = useDatabase && driverString == null;
-            Bot bot;
 
             if(noDriverString) {
-                Bukkit.getConsoleSender().sendMessage(MCBot.prefix + " Bot " + name + " has no driver string, but has useDatabase as true. Please provide the database type you will be using");
+                this.logger.logError("Bot " + name + " has no driver string, but has useDatabase as true. Please provide the database type you will be using");
                 continue;
             }
 
             if(useDatabase) {
                 DBDriver driver = DBDriver.valueOf(driverString);
 
-                bot = new Bot(name, scriptContent, autoCommit, driver);
+                bot = new Bot(this.logger, this.mcBot, name, scriptContent, autoCommit, driver);
             } else {
-                bot = new Bot(name, scriptContent);
+                bot = new Bot(this.logger, this.mcBot, name, scriptContent);
             }
 
             bots.add(bot);
         }
-    }
-
-    public static Bots getInstance() {
-        return instance;
     }
 }

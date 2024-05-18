@@ -16,7 +16,6 @@ import java.nio.file.Paths;
 
 public class MCBot extends JavaPlugin {
     public static MCBot instance;
-    public static String prefix;
     private Bots bots;
     private BotLogger logger;
 
@@ -35,7 +34,6 @@ public class MCBot extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        prefix = "[" + ChatColor.DARK_RED + this.getDescription().getName() + ChatColor.WHITE + "]";
         this.saveDefaultConfig();
         this.generateFolder("/scripts/");
         this.generateFolder("/databases/");

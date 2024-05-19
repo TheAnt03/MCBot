@@ -64,6 +64,7 @@ public class Bots {
             boolean useDatabase = botsSection.getBoolean(key + ".useDatabase");
             boolean autoCommit = botsSection.getBoolean(key + ".autoCommit");
             boolean noDriverString = useDatabase && driverString == null;
+            BotLogger scriptLogger = new BotLogger(name);
 
             if(noDriverString) {
                 this.logger.logError("Bot " + name + " has no driver string, but has useDatabase as true. Please provide the database type you will be using");
@@ -73,9 +74,9 @@ public class Bots {
             if(useDatabase) {
                 DBDriver driver = DBDriver.valueOf(driverString);
 
-                bot = new Bot(this.logger, this.mcBot, name, scriptContent, autoCommit, driver);
+                bot = new Bot(scriptLogger, this.mcBot, name, scriptContent, autoCommit, driver);
             } else {
-                bot = new Bot(this.logger, this.mcBot, name, scriptContent);
+                bot = new Bot(scriptLogger, this.mcBot, name, scriptContent);
             }
 
             bots.add(bot);

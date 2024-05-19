@@ -1,14 +1,11 @@
 package uraniumape.mcbot;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import uraniumape.mcbot.commands.MCBotCommand;
 import uraniumape.mcbot.events.ChatListener;
 import uraniumape.mcbot.bot.Bots;
 import uraniumape.mcbot.log.BotLogger;
-import uraniumape.mcbot.log.ServerLogger;
-import uraniumape.mcbot.script.ScriptLoader;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -33,7 +30,7 @@ public class MCBot extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.logger = new ServerLogger();
+        this.logger = new BotLogger(ChatColor.DARK_RED + this.getDescription().getName());
         this.saveDefaultConfig();
         this.generateFolder("/scripts/");
         this.generateFolder("/databases/");

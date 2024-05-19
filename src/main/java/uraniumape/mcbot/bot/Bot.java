@@ -37,7 +37,7 @@ public class Bot  {
     private Server server;
     private DatabaseConnection connection;
     private boolean useDatabase;
-    private static final Pattern STRIP_AMP_COLOR_PATTERN = Pattern.compile("(?i)" + String.valueOf('&') + "[0-9A-FK-ORX]");
+    private final Pattern STRIP_AMP_COLOR_PATTERN = Pattern.compile("(?i)" + '&' + "[0-9A-FK-ORX]");
 
     public Bot(BotLogger logger, MCBot mcBot, String name, String script) {
         this.instantiateBot(logger, mcBot, name, script);
@@ -61,31 +61,6 @@ public class Bot  {
     }
 
     /**
-     * Initialize the bot
-     *
-     * @param name - The bots in game name
-     * @param script - The script js as a string
-     */
-    private void instantiateBot(BotLogger logger, MCBot mcBot, String name, String script) {
-        this.logger = logger;
-        this.mcBot = mcBot;
-        this.name = name;
-        this.botPrefix = "[" + ChatColor.translateAlternateColorCodes('&', name) + "§f]";
-        this.script = script;
-        this.server = Bukkit.getServer();
-        this.useDatabase = false;
-
-        engine = new NashornScriptEngineFactory().getScriptEngine();
-
-        try {
-            engine.eval(this.script);
-            this.logger.logInfo("Bot " + this.name + " initialized!");
-        } catch (ScriptException e) {
-            this.logger.logError("There was an error when initializing script for bot " + name + ChatColor.WHITE + "\n:" + e.getMessage());
-        }
-    }
-
-    /**
      * Sends a message as the bot
      *
      * @param message - The message you want to send
@@ -103,13 +78,12 @@ public class Bot  {
     public String get(String path) {
         HttpResponse<String> response;
         HttpClient client = HttpClient.newHttpClient();
-
         HttpRequest request = HttpRequest.newBuilder(URI.create(path)).build();
 
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (InterruptedException | IOException e) {
-            this.logger.logError("Could not run get() for bot " + this.getName() + ChatColor.WHITE + "\n:" + e.getMessage());
+            this.logger.logError("Could not run get()\n:" + e.getMessage());
             throw new RuntimeException(e);
         }
 
@@ -184,7 +158,7 @@ public class Bot  {
         try {
             Object funcResult = invocable.invokeFunction(function, args);
         } catch (ScriptException e) {
-            this.logger.logError("Could not run onPlayerLeave() for bot " + this.getName() + ChatColor.WHITE + "\n:" + e.getMessage());
+            this.logger.logError("Could not run onPlayerLeave():\n" + e.getMessage());
         } catch (NoSuchMethodException e) {
             // Do nothing
         }
@@ -228,5 +202,37 @@ public class Bot  {
         return name;
     }
 
+    /**
+     * Get the logger to be used in the script if needed
+     *
+     * @return The scripts BotLogger instance
+     */
+    public BotLogger getLogger() {
+        return this.logger;
+    }
 
+    /**
+     * Initialize the bot
+     *
+     * @param name - The bots in game name
+     * @param script - The script js as a string
+     */
+    private void instantiateBot(BotLogger logger, MCBot mcBot, String name, String script) {
+        this.logger = logger;
+        this.mcBot = mcBot;
+        this.name = name;
+        this.botPrefix = "[" + ChatColor.translateAlternateColorCodes('&', name) + "§f]";
+        this.script = script;
+        this.server = Bukkit.getServer();
+        this.useDatabase = false;
+
+        engine = new NashornScriptEngineFactory().getScriptEngine();
+
+        try {
+            engine.eval(this.script);
+            this.logger.logInfo("Initialized!");
+        } catch (ScriptException e) {
+            this.logger.logError("There was an error when initializing script:\n" + e.getMessage());
+        }
+    }
 }
